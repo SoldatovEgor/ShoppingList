@@ -1,5 +1,6 @@
 package ru.soldatov.android.shoppinglist.presentation
 
+import android.util.Log
 import android.view.ViewGroup
 import android.view.LayoutInflater
 import androidx.recyclerview.widget.ListAdapter
@@ -13,6 +14,8 @@ class ShopListAdapter : ListAdapter<ShopItem, ShopListViewHolder>(ShopItemDiffCa
     var shopItemClickListener: ((ShopItem) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopListViewHolder {
+
+        Log.d("ShopListAdapter", "onCreateViewHolder")
 
         val layout = when(viewType) {
             ENABLED -> R.layout.item_shop_enabled
