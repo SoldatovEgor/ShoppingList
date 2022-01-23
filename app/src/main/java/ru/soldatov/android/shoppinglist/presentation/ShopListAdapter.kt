@@ -3,8 +3,12 @@ package ru.soldatov.android.shoppinglist.presentation
 import android.util.Log
 import android.view.ViewGroup
 import android.view.LayoutInflater
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.ListAdapter
 import ru.soldatov.android.shoppinglist.R
+import ru.soldatov.android.shoppinglist.databinding.ItemShopDisabledBinding
+import ru.soldatov.android.shoppinglist.databinding.ItemShopEnabledBinding
 import ru.soldatov.android.shoppinglist.domain.ShopItem
 import java.lang.RuntimeException
 
@@ -23,26 +27,36 @@ class ShopListAdapter : ListAdapter<ShopItem, ShopListViewHolder>(ShopItemDiffCa
             else -> throw RuntimeException("Not create layout")
         }
 
-        val view = LayoutInflater.from(parent.context).inflate(
+        val binding = DataBindingUtil.inflate<ViewDataBinding>(
+            LayoutInflater.from(parent.context),
             layout,
             parent,
             false
         )
-        return ShopListViewHolder(view)
+        return ShopListViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ShopListViewHolder, position: Int) {
         val shopItem = getItem(position)
+        val binding = holder.binding
 
-        holder.tvName.text = shopItem.name
-        holder.tvCount.text = shopItem.count.toString()
-
-        holder.itemView.setOnLongClickListener {
+        binding.root.setOnLongClickListener {
             shopItemLongClickListener?.invoke(shopItem)
             true
         }
-        holder.itemView.setOnClickListener {
+        binding.root.setOnClickListener {
             shopItemClickListener?.invoke(shopItem)
+        }
+
+        when(binding) {
+            is ItemShopEnabledBinding -> {
+                binding.tvName.text = shopItem.name
+                binding.tvCount.text = shopItem.count.toString()
+            }
+            is ItemShopDisabledBinding -> {
+                binding.tvName.text = shopItem.name
+                binding.tvCount.text = shopItem.count.toString()
+            }
         }
 
     }
