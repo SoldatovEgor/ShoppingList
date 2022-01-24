@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ru.soldatov.android.shoppinglist.R
+import ru.soldatov.android.shoppinglist.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
 
@@ -19,20 +20,18 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
     private lateinit var viewModel: MainViewModel
     private lateinit var adapterShopList: ShopListAdapter
 
-    private var shopItemContainer: FragmentContainerView? = null
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("MainActivity", "onCreate() $shopItemContainer, $savedInstanceState")
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         setupRecyclerView()
-        shopItemContainer = findViewById(R.id.shop_item_container)
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         viewModel.shopList.observe(this) {
             adapterShopList.submitList(it)
         }
-        buttonAddShopItem = findViewById(R.id.button_add_shop_item)
-        buttonAddShopItem.setOnClickListener {
+        binding.buttonAddShopItem.setOnClickListener {
             if (isContainerNotNull()) {
                 launchFragment(ShopItemFragment.newInstanceAddItem())
             } else {
@@ -42,33 +41,8 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        Log.d("MainActivity", "onStart() $shopItemContainer")
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.d("MainActivity", "onResume() $shopItemContainer")
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.d("MainActivity", "onPause() $shopItemContainer")
-    }
-
-    override fun onStop() {
-        super.onStop()
-        Log.d("MainActivity", "onStop() $shopItemContainer")
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d("MainActivity", "onDestroy() $shopItemContainer")
-    }
-
     private fun isContainerNotNull(): Boolean {
-        return shopItemContainer != null
+        return binding.shopItemContainer != null
     }
 
     private fun launchFragment(fragment: Fragment) {
@@ -80,9 +54,8 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
     }
 
     private fun setupRecyclerView() {
-        val rvShopList = findViewById<RecyclerView>(R.id.rv_shop_list)
         adapterShopList = ShopListAdapter()
-        with(rvShopList) {
+        with(binding.rvShopList) {
             adapter = adapterShopList
             recycledViewPool.setMaxRecycledViews(
                 ShopListAdapter.ENABLED,
@@ -96,7 +69,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
         setupLongClickListener()
         setupClickListener()
 
-        setupSwipeListener(rvShopList)
+        setupSwipeListener(binding.rvShopList)
     }
 
     private fun setupSwipeListener(rvShopList: RecyclerView) {
